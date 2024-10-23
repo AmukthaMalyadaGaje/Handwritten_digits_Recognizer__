@@ -3,12 +3,14 @@ import React, { useState } from "react";
 const Home: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [prediction, setPrediction] = useState<string | null>(null); // State for storing prediction result
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
       setSelectedFile(file);
       setPreviewImage(URL.createObjectURL(file)); // For image preview
+      setPrediction(null); // Reset prediction when a new image is selected
     }
   };
 
@@ -30,6 +32,9 @@ const Home: React.FC = () => {
 
         const data = await response.json();
         console.log("Prediction result:", data);
+
+        // Assuming the API returns the prediction as a property named 'prediction'
+        setPrediction(data.predicted_digit); // Update prediction state with the received prediction
       } catch (error) {
         console.error("Error uploading image:", error);
       }
@@ -74,6 +79,16 @@ const Home: React.FC = () => {
             Upload Image
           </button>
         </form>
+
+        {/* Display prediction result if it exists */}
+        {prediction !== null && (
+          <div className="mt-6 text-center border border-blue-200 rounded-lg p-4 bg-blue-50 shadow-md">
+            <h3 className="text-lg text-black font-semibold">Prediction</h3>
+            <p className="text-3xl font-bold text-blue-600 mt-2">
+              Digit: <span className="text-blue-800">{prediction}</span>
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
